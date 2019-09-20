@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../xiaoman.js"></script>
+    <script type="text/javascript">
+        xiaoman.config({
+            debug: true,
+            account: "15255457276",
+            modulesName: ['xiaoman-all'],
+            fail: function (res) {
+                console.log(res)
+            },
+            success: function (res) {
+                console.log(res)
+            }
+        });
+        function clean() {
+            $("#result").html("")
+        }
+        function login() {
+            xiaoman.base.login({
+                account: $("#account").val(), password: $("#password").val(),
+                success: function (res) {
+                    var outShowTelNum = res.outshowtel;
+                    if (outShowTelNum && outShowTelNum.length > 0) {
+                        for (var i = 0; i < outShowTelNum.length; i++) {
+                            $("#slShowTelNum").append("<option value='" + outShowTelNum[i] + "'>" + outShowTelNum[i] + "</option>");
+                            $("#slShowTelNumTransfer").append("<option value='" + outShowTelNum[i] + "'>" + outShowTelNum[i] + "</option>");
+                        }
+                    }
+
+                    $("#openPhone").attr("disabled", false)
+                    $("#logout").attr("disabled", false)
+                    $("#token").val(res.token)
+                    $("#result").append("<div style='color: deepskyblue'>登录成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div style='color: red'>登录失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function logout() {
+            xiaoman.base.logout({
+                success: function (res) {
+                    $("#token").val(res.token)
+                    $("#result").append("<div  style='color: deepskyblue'>退出登录成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>退出登录失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function openPhone() {
+            xiaoman.phone.open({
+                success: function (res) {
+                    $("#logout").attr("disabled", false)
+                    $("#closePhone").attr("disabled", false)
+                    $("#openPhone").attr("disabled", true)
+                    $("#getAgentState").attr("disabled", false)
+                    $("#setAgentState").attr("disabled", false)
+                    $("#result").append("<div  style='color: deepskyblue'>启动电话成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>启动电话失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function closePhone() {
+            xiaoman.phone.close({
+                success: function (res) {
+                    $("#closePhone").attr("disabled", true)
+                    $("#openPhone").attr("disabled", false)
+                    $("#result").append("<div  style='color: deepskyblue'>关闭电话成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>关闭电话失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function loginPhone() {
+            xiaoman.phone.login({
+                token: $("#token").val(),
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>电话签入成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>电话签入失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function logoutPhone() {
+            xiaoman.phone.logout({
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>电话签出成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div style='color: red'>电话签出失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function addEvent() {
+            xiaoman.phone.event.onMessage(function (res) {
+                $("#result").append("<div>消息通知：" + JSON.stringify(res) + "</div>")
+            });
+            xiaoman.phone.event.ringing(function (res) {
+                $("#result").append("<div>振铃通知：" + JSON.stringify(res) + "</div>")
+            });
+            xiaoman.phone.event.established(function (res) {
+                $("#mute").attr("disabled", false)
+                $("#unMute").attr("disabled", false)
+                $("#result").append("<div>接听通知：" + JSON.stringify(res) + "</div>")
+            });
+            xiaoman.phone.event.released(function (res) {
+                $("#mute").attr("disabled", true)
+                $("#unMute").attr("disabled", true)
+                $("#result").append("<div>挂断通知：" + JSON.stringify(res) + "</div>")
+            });
+            xiaoman.phone.event.agentStateChange(function (res) {
+                $("#result").append("<div>状态变化通知：" + JSON.stringify(res) + "</div>")
+                if (res.state == "ringing") {
+                    $("#answer").attr("disabled", false)
+                    $("#release").attr("disabled", true)
+                } else if (res.state == "busy") {
+                    $("#answer").attr("disabled", true)
+                    $("#release").attr("disabled", false)
+                    $("#transfer").attr("disabled", false)
+                } else if (res.state == "logout") {
+                    $("#loginPhone").attr("disabled", false)
+                    $("#logoutPhone").attr("disabled", true)
+
+                } else if (res.state == "connected") {
+                    $("#loginPhone").attr("disabled", false)
+                }
+                else if (res.state == "login") {
+                    $("#loginPhone").attr("disabled", true)
+                    $("#logoutPhone").attr("disabled", false)
+
+                } else if (res.state == "dialing") {
+                    xiaoman.base.getRuntimeData({
+                        name: "CallType",
+                        success: function (res) {
+                            if (res.value == 'outbound') {
+                                $("#answer").attr("disabled", true)
+                            } else {
+                                $("#answer").attr("disabled", false)
+                            }
+                        }
+                    })
+                    $("#release").attr("disabled", false)
+                }
+                else if (res.state == "ready") {
+                    $("#callOut").attr("disabled", false)
+                    $("#answer").attr("disabled", true)
+                    $("#release").attr("disabled", true)
+                    $("#transfer").attr("disabled", true)
+                }
+                else {
+                    $("#callOut").attr("disabled", true)
+                    $("#answer").attr("disabled", true)
+                    $("#release").attr("disabled", true)
+                    $("#loginPhone").attr("disabled", true)
+                    $("#logoutPhone").attr("disabled", true)
+                    $("#transfer").attr("disabled", true)
+                }
+            })
+            var names = []
+            for (var name in xiaoman.phone.event) {
+                names.push(name)
+            }
+            $("#result").append("<div>添加事件：" + JSON.stringify(names) + "</div>")
+        }
+        function callOut() {
+            xiaoman.phone.callOut({
+                line: $("#slShowTelNum").val(),
+                phoneNum: $("#callOutPhoneNum").val(),
+                isRecord: ($("#slIsRecord").val() == "true" || $("#slIsRecord").val() == "") ? true : false,
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>外呼成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>外呼失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function answer() {
+            xiaoman.phone.answer({
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>接听成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>接听失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function release() {
+            xiaoman.phone.release({
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>挂断成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>挂断失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function openRecord() {
+            xiaoman.phone.openRecord({
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>开启录音成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>开启录音失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function closeRecord() {
+            xiaoman.phone.closeRecord({
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>关闭录音成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>关闭录音失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function mute() {
+            xiaoman.phone.setMute({
+                operate: "open",
+                success: function (res) {
+                    $("#mute").attr("disabled", true)
+                    $("#unMute").attr("disabled", false)
+                    $("#result").append("<div  style='color: deepskyblue'>静音成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>静音失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function unMute() {
+            xiaoman.phone.setMute({
+                operate: "close",
+                success: function (res) {
+                    $("#mute").attr("disabled", false)
+                    $("#unMute").attr("disabled", true)
+                    $("#result").append("<div  style='color: deepskyblue'>取消静音成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>取消静音失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function setAgentState() {
+            xiaoman.phone.setAgentState({
+                state: $("#slAgentState").val(),
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>设置座席状态成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>设置座席状态失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function getAgentState() {
+            xiaoman.phone.getAgentState({
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>获取当前座席状态成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>获取当前座席状态失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function getRunData() {
+            xiaoman.base.getRuntimeData({
+                name: $("#slRunDate").val(),
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>获取随录数据成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>获取随录数据失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function transfer() {
+            xiaoman.phone.transfer({
+                line: $("#slShowTelNumTransfer").val(), phoneNum: $("#transferPhoneNum").val(),
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>外呼成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>外呼失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+
+    </script>
+
+
+</head>
+<body>
+<table>
+    <tr>
+        <td width="150">系统登录：</td>
+        <td><input type="text" placeholder="用户名" id="account" value=""/></td>
+        <td><input type="password" placeholder="密码" id="password" value=""/></td>
+        <td>token：</td>
+        <td><input id="token" type="text" readonly="readonly"/></td>
+        <td>
+            <button id="login" type="button" onclick="login()">登录</button>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">退出登录：</td>
+        <td>
+            <button id="logout" disabled="disabled" type="button" onclick="logout()">退出</button>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">注入通知事件：</td>
+        <td>
+            <button id="addEvent" type="button" onclick="addEvent()">添加通知事件</button>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">启动电话：</td>
+        <td>
+            <button id="openPhone" type="button" disabled="disabled" onclick="openPhone()">启动电话</button>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">关闭电话：</td>
+        <td>
+            <button id="closePhone" type="button" disabled="disabled" onclick="closePhone()">关闭电话</button>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">电话签入：</td>
+        <td>
+            <button id="loginPhone" type="button" onclick="loginPhone()" disabled="disabled">电话签入</button>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">电话签出：</td>
+        <td>
+            <button id="logoutPhone" type="button" onclick="logoutPhone()" disabled="disabled">电话签出</button>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">外呼：</td>
+        <td>
+            <select id="slShowTelNum">
+                <option value="">请选择外显号码</option>
+            </select>
+        </td>
+        <!-- <td><input type="text" placeholder="外显号码" id="callOutLine" value="90001"/></td>-->
+        <td><input type="text" placeholder="号码" id="callOutPhoneNum" value=""/></td>
+        <td>
+            <select id="slIsRecord">
+                <option value="">是否录音-默认开启</option>
+                <option value="true">开启</option>
+                <option value="false">关闭</option>
+            </select>
+        </td>
+        <td>
+            <button id="callOut" type="button" onclick="callOut()" disabled="disabled">外呼</button>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">转接：</td>
+        <td>
+            <select id="slShowTelNumTransfer">
+                <option value="">请选择外显号码</option>
+            </select>
+        </td>
+        <!--<td><input type="text" placeholder="外显号码" id="transferLine" value=""/></td>-->
+        <td><input type="text" placeholder="号码" id="transferPhoneNum" value=""/></td>
+        <td>
+            <button id="transfer" type="button" onclick="transfer()" disabled="disabled">转接</button>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">接听电话：</td>
+        <td>
+            <button id="answer" type="button" onclick="answer()" disabled="disabled">接听</button>
+        </td>
+        <td></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">开启录音：</td>
+        <td>
+            <button id="openRecord" type="button" onclick="openRecord()" disabled="disabled">开启录音</button>
+        </td>
+        <td></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">关闭录音：</td>
+        <td>
+            <button id="closeRecord" type="button" onclick="closeRecord()" disabled="disabled">关闭录音</button>
+        </td>
+        <td></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">挂断电话：</td>
+        <td>
+            <button id="release" type="button" onclick="release()" disabled="disabled">挂断</button>
+        </td>
+        <td></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">静音：</td>
+        <td>
+            <button id="mute" type="button" disabled="disabled" onclick="mute()">静音</button>
+        </td>
+        <td></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">取消静音：</td>
+        <td>
+            <button id="unMute" type="button" disabled="disabled" onclick="unMute()">取消静音</button>
+        </td>
+        <td></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">座席状态设置：</td>
+        <td>
+            <select id="slAgentState">
+                <option value="ready">示闲</option>
+                <option value="notready">示忙</option>
+                <option value="logout">退出</option>
+            </select>
+        </td>
+        <td>
+            <button id="setAgentState" disabled="disabled" type="button" onclick="setAgentState()">确定</button>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">获取随录数据：</td>
+        <td>
+            <select id="slRunDate">
+                <option value="RecordId">录音唯一Id</option>
+                <option value="Channel">渠道</option>
+                <option value="Ani">主叫号码</option>
+                <option value="Dnis">被叫号码</option>
+                <option value="TransferConnId">转接标记</option>
+                <option value="ConnId">会话唯一标志</option>
+                <option value="CallType">当前来电类型</option>
+            </select>
+        </td>
+        <td>
+            <button id="getRunDate" type="button" onclick="getRunData()">确定</button>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td width="150">获取当前座席状态：</td>
+        <td>
+            <button id="getAgentState" disabled="disabled" type="button" onclick="getAgentState()">获取</button>
+        </td>
+    </tr>
+</table>
+<button id="clear" type="button" onclick="clean()">清除结果</button>
+<div id="result" style="font-size: 10px;color: gray">
+
+</div>
+
+</body>
+</html>

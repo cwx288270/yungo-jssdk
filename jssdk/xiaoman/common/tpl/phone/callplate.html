@@ -1,0 +1,28 @@
+<div class="xiaoman">
+    <div class="xm_callplate">
+        <div class="">
+            <div class="sloutshowtel">
+                <select id="xm_outshowtel">
+                    <option value="">请选择外显号码</option>
+                    {{each telRes as value index}}
+                    <option value="{{index}}">{{index}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="callnum">
+                <input class="input" placeholder="请输入号码" type="text" id="xm_callnum" maxLength="32"/>
+            </div>
+        </div>
+        <div class="plate" id="xm_plate">
+            <div><span>1</span><span>2</span><span>3</span></div>
+            <div><span>4</span><span>5</span><span>6</span></div>
+            <div><span>7</span><span>8</span><span>9</span></div>
+            <div><span style="margin: 0 2px">*</span><span>0</span><span>#</span></div>
+        </div>
+        <div class="action">
+            <div class="button callOutButton" onclick="xiaoman.client.phone.callOut()" id="xm_callout">
+                <i class="fa fa-phone" aria-hidden="true"></i>
+            </div>
+        </div>
+    </div>
+</div>

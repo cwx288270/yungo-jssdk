@@ -1,0 +1,28 @@
+<div class="xiaoman">
+    <div class="xm_callshow">
+        <div class="waittime" id="xm_waittime">
+            等待：<span>00:00:00</span>
+        </div>
+        <div class="headerimg">
+            <i class="fa fa-user-circle" aria-hidden="true"></i>
+        </div>
+        <div class="telnum">{{value}}</div>
+        <div class="action">
+            <table>
+                <tr>
+                    <td>
+                        <div class="button releaseButton" onclick="xiaoman.client.phone.release()" id="xm_login_cancel">
+                            <i class="fa fa-phone" aria-hidden="true"></i>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="button answerButton" onclick="xiaoman.client.phone.answer()" id="xm_login">
+                            <i class="fa fa-phone" aria-hidden="true"></i>
+                        </div>
+                    </td>
+
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

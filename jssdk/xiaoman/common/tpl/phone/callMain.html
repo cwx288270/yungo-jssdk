@@ -1,0 +1,46 @@
+<div class="xiaoman-fb">
+    <div class="xm_callMain">
+        <div class="callMainAll">
+
+            <div class="callMain">
+                <i class="callmove fa fa-arrows" aria-hidden="true"></i>
+                <div class="callTime">00:00:00</div>
+                <div title="挂断" class="callRelease" onclick="xiaoman.client.phone.release()">
+                    <i class="fa fa-phone" aria-hidden="true"></i>
+                </div>
+                <div title="静音/取消静音" class="callMute" onclick="xiaoman.client.phone.setMute()" mutestate="close">
+                    <i class="fa fa-volume-up" aria-hidden="true"></i>
+                </div>
+                <div title="转接" class="callTrans" onclick="xiaoman.client.phone.transferPlateShow()">
+                    <i class="fa fa-volume-control-phone" aria-hidden="true"></i>
+                </div>
+               <!-- <div title="保存通话和取回保持通话" class="callKeep" onclick="xiaoman.client.phone.setCallKeep()"  keepstate="unkeep">
+                    <i class="fa fa-tty" aria-hidden="true"></i>
+                </div>-->
+                <div class="callStatus">
+                    <div class="callStatusFa">
+                        <i class="fa-status" aria-hidden="true"></i>
+                        <i class="statusText">点击登录</i>
+                    </div>
+                    <div class="callStatusBox">
+                            <span onclick="xiaoman.client.phone.setAgentState('ready')" class="call_sx"
+                                  agentstate="ready"><i class="fa-status fa-ready" aria-hidden="true"></i>示闲<i
+                                    class="fa fa-check noactivate" aria-hidden="true"></i></span>
+                        <span onclick="xiaoman.client.phone.setAgentState('notready')" class="call_sm"
+                              agentstate="notready"><i class="fa-status fa-notready" aria-hidden="true"></i>示忙<i
+                                class="fa fa-check noactivate" aria-hidden="true"></i></span>
+                        <span class="call_hhcl" agentstate="aftercallwork"><i class="fa-status fa-aftercallwork"
+                                                                              aria-hidden="true"></i>话后处理<i
+                                class="fa fa-check noactivate" aria-hidden="true"></i></span>
+                        <HR width="100%" color=gray SIZE=3>
+                        <div onclick="xiaoman.client.phone.logout()" class="call_logout" agentstate="aftercallwork">
+                            <i class="fa fa-sign-out" aria-hidden="true"></i>退出</i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="callAnswer" onclick="xiaoman.client.phone.callPlateShow()">
+                <i class="fa fa-phone" aria-hidden="true"></i>
+            </div>
+        </div>
+    </div>
+</div>

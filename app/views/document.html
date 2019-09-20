@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS-SDK开发者文档</title>
+    <link rel="stylesheet" href="../script/layui/css/layui.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <script type="text/javascript" src="../script/layui/layui.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header header header-demo">
+        <div class="layui-main">
+            <span class="logo">
+                 <img src="../images/logoBig.png" alt="SDK">
+            </span>
+            <a class="title" href="http://www.layui.com/">
+                晓曼客服JS-SDK开发者文档
+            </a>
+            <ul class="layui-nav">
+                <li class="layui-nav-item ">
+                    <a href="#">登录</a>
+                </li>
+                <span class="layui-nav-bar" style="left: 54px; top: 65px; width: 0px; opacity: 0;"></span></ul>
+        </div>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+
+            <ul class="layui-nav layui-nav-tree site-demo-nav">
+
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="javascript:;" href="javascript:;">概述<span class="layui-nav-more"></span></a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="http://www.layui.com/demo/">更新说明</a>
+                        </dd>
+                        <dd>
+                            <a href="http://www.layui.com/demo/">JS-SDK使用说明</a>
+                        </dd>
+                        <dd>
+                            <a href="http://www.layui.com/demo/">接口事件说明</a>
+                        </dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="javascript:;" href="javascript:;">接口<span class="layui-nav-more"></span></a>
+                    <dl class="layui-nav-child">
+                        <dd class="">
+                            <a href="#">基础接口</a>
+                        </dd>
+                        <dd class="">
+                            <a href="#">电话接口</a>
+                        </dd>
+                        <dd class="layui-this">
+                            <a href="http://www.layui.com/demo/nav.html">导航</a>
+                        </dd>
+                        <dd class="">
+                            <a href="http://#">在线消息接口</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="javascript:;" href="javascript:;">事件<span class="layui-nav-more"></span></a>
+                    <dl class="layui-nav-child">
+                        <dd class="">
+                            <a href="http://www.layui.com/demo/button.html">电话</a>
+                        </dd>
+                        <dd class="">
+                            <a href="http://www.layui.com/demo/form.html">在线消息</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="javascript:;" href="javascript:;">附录<span class="layui-nav-more"></span></a>
+                    <dl class="layui-nav-child">
+                        <dd class="">
+                            <a href="http://www.layui.com/demo/button.html">通用字段说明</a>
+                        </dd>
+                        <dd class="">
+                            <a href="http://www.layui.com/demo/form.html">返回码和描述</a>
+                        </dd>
+                    </dl>
+                </li>
+
+                <span class="layui-nav-bar" style="top: 22.5px; height: 0px; opacity: 0;"></span></ul>
+
+        </div>
+    </div>
+    <div class="layui-tab layui-tab-brief" lay-filter="demoTitle">
+        <ul class="layui-tab-title site-demo-title">
+            <li class="layui-this">预览</li>
+            <li>查看代码</li>
+            <li>文档</li>
+        </ul>
+        <div id="xiaoman_content" class="layui-body layui-tab-content site-demo site-demo-body">
+
+        </div>
+    </div>
+    <div class="site-tree-mobile layui-hide">
+        <i class="layui-icon"></i>
+    </div>
+    <div class="site-mobile-shade"></div>
+
+    <script>
+        layui.config({
+            base: '../script/layui/lay/modules/'
+            , version: '1483691295605'
+        }).use('global');
+        window.global = {
+            preview: function () {
+                var preview = document.getElementById('LAY_preview');
+                return preview ? preview.innerHTML : '';
+            }()
+        };
+    </script>
+</div>
+
+</body>
+</html>

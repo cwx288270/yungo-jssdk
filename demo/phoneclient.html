@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../xiaoman.js"></script>
+   <!-- <script src="../lib/jquery.js"></script>
+    <script src="../lib/layer/layer.js"></script>-->
+
+    <script type="text/javascript">
+
+    </script>
+    <script type="text/javascript">
+        xiaoman.config({
+            debug: true,
+            account: "15255457276",
+            modulesName: ['xiaoman-all', 'xiaoman-phone-client'],
+            extOptions: {
+                PhoneClient: {bottom: '250px', right: '150px'}
+            },
+            fail: function (res) {
+                console.log(res)
+            },
+            success: function (res) {
+                console.log(res)
+            }
+        });
+
+        function clean() {
+            $("#result").html("")
+        }
+        function addEvent() {
+            xiaoman.phone.event.onMessage(function (res) {
+                $("#result").append("<div>out->消息通知：" + JSON.stringify(res) + "</div>")
+            });
+            xiaoman.phone.event.ringing(function (res) {
+                $("#result").append("<div>out->振铃通知：" + JSON.stringify(res) + "</div>")
+            });
+            xiaoman.phone.event.established(function (res) {
+                $("#mute").attr("disabled", false)
+                $("#unMute").attr("disabled", false)
+                $("#result").append("<div>out->接听通知：" + JSON.stringify(res) + "</div>")
+            });
+            xiaoman.phone.event.released(function (res) {
+                $("#mute").attr("disabled", true)
+                $("#unMute").attr("disabled", true)
+                $("#result").append("<div>out->挂断通知：" + JSON.stringify(res) + "</div>")
+            });
+            xiaoman.phone.event.agentStateChange(function (res) {
+                $("#result").append("<div>out->状态变化通知：" + JSON.stringify(res) + "</div>")
+                if (res.state == "ringing") {
+                    $("#answer").attr("disabled", false)
+                    $("#release").attr("disabled", true)
+                } else if (res.state == "busy") {
+                    $("#answer").attr("disabled", true)
+                    $("#release").attr("disabled", false)
+                    $("#transfer").attr("disabled", false)
+                } else if (res.state == "logout") {
+                    $("#loginPhone").attr("disabled", false)
+                    $("#logoutPhone").attr("disabled", true)
+
+                } else if (res.state == "connected") {
+                    $("#loginPhone").attr("disabled", false)
+                }
+                else if (res.state == "login") {
+                    $("#loginPhone").attr("disabled", true)
+                    $("#logoutPhone").attr("disabled", false)
+
+                } else if (res.state == "dialing") {
+                    xiaoman.base.getRuntimeData({
+                        name: "CallType",
+                        success: function (res) {
+                            if (res.value == 'outbound') {
+                                $("#answer").attr("disabled", true)
+                            } else {
+                                $("#answer").attr("disabled", false)
+                            }
+                        }
+                    })
+                    $("#release").attr("disabled", false)
+                }
+                else if (res.state == "ready") {
+                    $("#callOut").attr("disabled", false)
+                    $("#answer").attr("disabled", true)
+                    $("#release").attr("disabled", true)
+                    $("#transfer").attr("disabled", true)
+                }
+                else {
+                    $("#callOut").attr("disabled", true)
+                    $("#answer").attr("disabled", true)
+                    $("#release").attr("disabled", true)
+                    $("#loginPhone").attr("disabled", true)
+                    $("#logoutPhone").attr("disabled", true)
+                    $("#transfer").attr("disabled", true)
+                }
+            })
+            var names = []
+            for (var name in xiaoman.phone.event) {
+                names.push(name)
+            }
+            $("#result").append("<div>out->添加事件：" + JSON.stringify(names) + "</div>")
+        }
+        function getAgentState() {
+            xiaoman.phone.getAgentState({
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>获取当前座席状态成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>获取当前座席状态失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+        function getRunData() {
+            xiaoman.base.getRuntimeData({
+                name: $("#slRunDate").val(),
+                success: function (res) {
+                    $("#result").append("<div  style='color: deepskyblue'>获取随录数据成功：" + JSON.stringify(res) + "</div>")
+                },
+                fail: function (res) {
+                    $("#result").append("<div  style='color: red'>获取随录数据失败：" + JSON.stringify(res) + "</div>")
+                }
+            })
+        }
+
+    </script>
+</head>
+<body>
+<div>
+    <table>
+        <tr>
+            <td width="150">注入通知事件：</td>
+            <td>
+                <button id="addEvent" type="button" onclick="addEvent()">添加通知事件</button>
+            </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td width="150">获取随录数据：</td>
+            <td>
+                <select id="slRunDate">
+                    <option value="RecordId">录音唯一Id</option>
+                    <option value="Channel">渠道</option>
+                    <option value="Ani">主叫号码</option>
+                    <option value="Dnis">被叫号码</option>
+                    <option value="TransferConnId">转接标记</option>
+                    <option value="ConnId">会话唯一标志</option>
+                    <option value="CallType">当前来电类型</option>
+                </select>
+            </td>
+            <td>
+                <button id="getRunDate" type="button" onclick="getRunData()">确定</button>
+            </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td width="150">获取当前座席状态：</td>
+            <td>
+                <button id="getAgentState" type="button" onclick="getAgentState()">获取</button>
+            </td>
+        </tr>
+    </table>
+    <button id="clear" type="button" onclick="clean()">清除结果</button>
+    <div id="result" style="font-size: 10px;color: gray">
+
+    </div>
+</div>
+</body>
+</html>
